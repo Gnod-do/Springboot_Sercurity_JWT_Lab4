@@ -7,27 +7,21 @@ import "./main.css";
 import store from "../../app/store";
 
 
-const serverPort = 6061;
+const url = "http://localhost:6061/api";
 function Mainpage() {
     const [x_form, setX] = useState('0');
     const [y_form, setY] = useState('0');
     const [r_form, setR] = useState('1');
     const [checks, setChecks] = useState(null);
     useEffect(() => {
-        let information = {
-            "token": `${store.getState().token.token}`
-        };
-        console.log(`${store.getState().token.token}`)
-        console.log(information)
         if (checks === null) {
-            fetch(`http://localhost:${serverPort}/api/v1/auth/getAllPoint`, {
+            fetch(`${url}/auth/getAllPoint`, {
                 method: "POST",
                 headers: {
-                    'Content-type': 'application/json'
+                    'Content-type': 'application/json',
+                    'Authorization': `${store.getState().token.token}`
                 },
-                body: JSON.stringify(information)
             }).then(response => response.text().then(text => {
-                console.log(JSON.parse(text));
                 setChecks(JSON.parse(text));
             }))
         }

@@ -1,8 +1,7 @@
 import store from "../../../app/store";
 
+const url = "http://localhost:6061/api";
 
-
-const serverPort = 6061;
 function clicked(e, r, setChecks, checks) {
     let r_val = parseFloat(r)
     if (isNaN(r_val)) {
@@ -11,8 +10,6 @@ function clicked(e, r, setChecks, checks) {
     let maslo = document.getElementById('canvas');
     let width = maslo.getAttribute("width");
     let height = maslo.getAttribute("height");
-    console.log(width);
-    console.log(height);
     let event_x = e.pageX - maslo.offsetLeft;
     let event_y = e.pageY - maslo.offsetTop;
     let x = (event_x - width/2) * r / (width/5*2);
@@ -23,21 +20,19 @@ function clicked(e, r, setChecks, checks) {
     }
     if (checkNumbers(r_val, -3, 3) && checkNumbers(x, -3, 3) && checkNumbers(y, -3, 5)) {
         let information = {
-            "token": `${store.getState().token.token}`,
             "x": x,
             "y": y,
             "r": r_val
         };
-        fetch(`http://localhost:${serverPort}/api/v1/auth/point`, {
+        fetch(`${url}/auth/point`, {
             method: "POST",
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': `${store.getState().token.token}`
             },
             body: JSON.stringify(information)
         }).then(response => response.text().then(text => {
-            console.log(JSON.parse(text));
             setChecks(JSON.parse(text));
-            //props.showChecks();
         }))
     }
 }
@@ -124,8 +119,6 @@ function drawPoints(r, checks, context) {
         return;
     }
     let coordinates = checks;
-    console.log("Day la gia tri cua check");
-    console.log(checks);
     if (coordinates.length === 0) {
         return
     }

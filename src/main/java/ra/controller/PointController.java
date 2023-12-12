@@ -51,20 +51,20 @@ public class PointController {
 
     // Put and get point of user
     @PostMapping("/point")
-    public ResponseEntity<?> setPoint(@RequestBody PointsCredentials point, BindingResult bindingResult){
+    public ResponseEntity<?> setPoint(@RequestBody PointsCredentials point, @RequestHeader(value = "Authorization", required = true) String token, BindingResult bindingResult){
         if (bindingResult.hasErrors()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error");
         }
         point.setResult(point.getX(), point.getY(), point.getR());
         try {
-            pointServiceImp.register(point);
+            pointServiceImp.register(point, token);
         }catch (IllegalArgumentException e){
             log.error("The data sent is not in the correct format");
             Map<String,String> resp = new HashMap<>();
             resp.put("error","The data sent is not in the correct format");
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(resp);
         }
-        List<Points> points = pointServiceImp.getAllPointsByUser(userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(point.getToken())));
+        List<Points> points = pointServiceImp.getAllPointsByUser(userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(token)));
         StringJoiner joiner = new StringJoiner(",");
         for (Points point1 : points){
             StringBuilder builder = new StringBuilder();
@@ -83,11 +83,8 @@ public class PointController {
     }
 
     @PostMapping("/getAllPoint")
-    public ResponseEntity<?> getAllPoint(@RequestBody PointsCredentials point, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error");
-        }
-        Users user = userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(point.getToken()));
+    public ResponseEntity<?> getAllPoint(@RequestHeader(value = "Authorization", required = true) String token){
+        Users user = userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(token));
         if (user == null){
             return ResponseEntity.badRequest().body(new MessageResponse("Error: You do not have access to this resource because you are not logged in"));
         }

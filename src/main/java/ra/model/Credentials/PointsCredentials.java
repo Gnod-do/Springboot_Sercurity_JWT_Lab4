@@ -6,8 +6,6 @@ public class PointsCredentials {
 
     private String x;
 
-    @NotEmpty
-    private String token;
 
 
     private String y;
@@ -59,11 +57,4 @@ public class PointsCredentials {
         this.r = r;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

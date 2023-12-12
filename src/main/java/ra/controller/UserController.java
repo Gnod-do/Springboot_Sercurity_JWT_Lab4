@@ -1,6 +1,7 @@
 package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import ra.model.entity.Roles;
 import ra.model.entity.Users;
 import ra.payload.request.LoginRequest;
 import ra.payload.request.SignupRequest;
+import ra.payload.response.ErrorResponse;
 import ra.payload.response.JwtResponse;
 import ra.payload.response.MessageResponse;
 import ra.model.service.RoleService;
@@ -45,16 +47,16 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
         if (userService.existsByUserName(signupRequest.getUserName())){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already"));
+            return ResponseEntity.badRequest().body(new ErrorResponse("Error: Username is already"));
         }
         String userName = signupRequest.getUserName();
         String password = signupRequest.getPassword();
         if (userName.equals("") || password.equals("")){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Password and username cannot be empty"));
+            return ResponseEntity.badRequest().body(new ErrorResponse("Error: Password and username cannot be empty"));
         }
         Users user = new Users();
         user.setUserName(userName);
-        user.setPassword(password);
+        user.setPassword(encoder.encode(password));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date dateNow = new Date();
         String strNow = sdf.format(dateNow);
@@ -82,7 +84,6 @@ public class UserController {
                         listRoles.add(userRole);
                 }
                     }
-
             );
         }
         user.setListRoles(listRoles);
@@ -92,14 +93,21 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(),loginRequest.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String jwt = tokenProvider.generateToken(customUserDetails);
-        List<String> listRoles = customUserDetails.getAuthorities().stream()
-                .map(item->item.getAuthority()).collect(Collectors.toList());
-        return ResponseEntity.ok(new JwtResponse(jwt,customUserDetails.getUsername(), listRoles));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUserName(),loginRequest.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            String jwt = tokenProvider.generateToken(customUserDetails);
+            List<String> listRoles = customUserDetails.getAuthorities().stream()
+                    .map(item->item.getAuthority()).collect(Collectors.toList());
+            return ResponseEntity.ok(new JwtResponse(jwt,customUserDetails.getUsername(), listRoles));
+        } catch (ArrayIndexOutOfBoundsException e){
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid username/password",HttpStatus.UNAUTHORIZED.value()));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new ErrorResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+
     }
 }

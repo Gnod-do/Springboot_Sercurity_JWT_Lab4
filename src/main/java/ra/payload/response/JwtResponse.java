@@ -5,7 +5,7 @@ import java.util.List;
 public class JwtResponse {
     String token;
     private String type = "Bearer";
-    private int userId;
+//    private int userId;
     private String userName;
     private List<String> listRoles;
 
@@ -31,13 +31,13 @@ public class JwtResponse {
         this.type = type;
     }
 
-    public int getUserId() {
-        return userId;
-    }
+//    public int getUserId() {
+//        return userId;
+//    }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+//    public void setUserId(int userId) {
+//        this.userId = userId;
+//    }
 
     public String getUserName() {
         return userName;

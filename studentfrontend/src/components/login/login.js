@@ -7,18 +7,18 @@ import "./login.css"
 
 let MessageInstance;
 
-const serverPort = 6060;
+const url = "http://localhost:6061/api";
 
 
 function Login() {
 
     const signIn = e => {
         let information = {
-            "login": username,
+            "userName": username,
             "password": password
         };
     
-        fetch(`http://localhost:${serverPort}/api/v1/auth/signin`, {
+        fetch(`${url}/users/signin`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -26,11 +26,10 @@ function Login() {
             body: JSON.stringify(information)
         }).then(respone => respone.json().then(json => {
             if (respone.ok) {
-                // console.log(json)
-                // console.log(json.login)
-                store.dispatch({type: "change", value: json.token});
+                store.dispatch({type: "change", value: json.userName});
+                store.dispatch({type: "dame", value: json.token});
             } else {
-                let errorText = json.error;
+                let errorText = json.message;
                 MessageInstance.show({severity: 'error', summary: errorText});
             }
         }))
@@ -38,11 +37,12 @@ function Login() {
     
     const signUp = e => {
         let information = {
-            "login": username,
-            "password": password
+            "userName": username,
+            "password": password,
+            "listRoles":[]
         };
 
-        fetch(`http://localhost:${serverPort}/api/v1/auth/signup`, {
+        fetch(`${url}/users/signup`, {
             method: "POST",
             headers: {
                 'Content-type': 'application/json'
@@ -51,13 +51,13 @@ function Login() {
         }).then(response => response.json().then(json => {
             if (response.ok) {
                 MessageInstance.show({severity: 'success', summary: 'Successful Registration'});
-                // console.log(json)
-                // console.log(json.login)
             } else {
-                let errorText = json.error;
+                let errorText = json.message;
                 MessageInstance.show({severity: 'error', summary: errorText});
             }
-        }))
+        })).catch(error => {
+            MessageInstance.show({severity: 'error', summary: error});
+        })
     }
 
     const [username, setUsername] = useState("");

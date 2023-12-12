@@ -4,26 +4,24 @@ import {Button} from "primereact/button";
 import store from "../../app/store";
 
 
-const serverPort = 6061;
+const url = "http://localhost:6061/api";
 function CoordinatesForm(props) {
     const submit = () => {
         let information = {
-            "token": `${store.getState().token.token}`,
             "x": props.x_form,
             "y": props.y_form,
             "r": props.r_form
         };
         if (props.validate()) {
-            fetch(`http://localhost:${serverPort}/api/v1/auth/point`, {
+            fetch(`${url}/auth/point`, {
                 method: "POST",
                 headers: {
-                    'Content-type': 'application/json'
+                    'Content-type': 'application/json',
+                    'Authorization': `${store.getState().token.token}`
                 },
                 body: JSON.stringify(information)
             }).then(response => response.text().then(text => {
-                console.log(JSON.parse(text));
                 props.setChecks(JSON.parse(text));
-                console.log(information + "sdas");
             }))
         }
     }

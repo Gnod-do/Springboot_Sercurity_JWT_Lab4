@@ -17,23 +17,10 @@ class App extends Component {
       backgroundRepeat: "repeat"
     }}><Heading/><br/>
 
-      {console.log(this.props.store.getState().login.login === null)}
-      {/* {this.props.store.getState().login !== null ? <Mainpage/> :<Loginpage/>} */}
       {this.props.store.getState().login.login !== null ? <Mainpage/> :<Loginpage/>}
-
-
+      
     </div>)
-        //this.localStorage.getItem("login") == null || undefined ? <Loginpage/> : <Mainpage/>
-    //
   }
 }
-
-// function App() {
-//   return (
-//     <div className="App">
-//         <Loginpage/>
-//     </div>
-//   );
-// }
 
 export default App;

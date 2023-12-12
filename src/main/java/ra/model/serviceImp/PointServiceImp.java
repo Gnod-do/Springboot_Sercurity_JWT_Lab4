@@ -35,12 +35,12 @@ public class PointServiceImp implements PointService {
 
     @NotEmpty
     @NotNull
-    public Points register(PointsCredentials pointsCredentials) throws IllegalArgumentException {
+    public Points register(PointsCredentials pointsCredentials, String token) throws IllegalArgumentException {
         Points point = new Points();
         point.setX(Double.parseDouble(pointsCredentials.getX()));
         point.setY(Double.parseDouble(pointsCredentials.getY()));
         point.setR(Double.parseDouble(pointsCredentials.getR()));
-        point.setUser(userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(pointsCredentials.getToken())));
+        point.setUser(userRepository.getUsersByUserName(jwtTokenProvider.getUserNameFromJWT(token)));
         if (point.getUser() == null) {
             throw new IllegalArgumentException();
         }
