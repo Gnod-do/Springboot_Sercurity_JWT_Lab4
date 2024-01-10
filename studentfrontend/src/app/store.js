@@ -27,9 +27,11 @@ function tokenReducer(state = null, action) {
     }
 }
 
+
+
 const rootReducer = combineReducers({
     login: loginReducer,
-    token: tokenReducer,
+    token: tokenReducer
 })
 
 const store = createStore(rootReducer);

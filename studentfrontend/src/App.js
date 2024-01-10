@@ -1,26 +1,44 @@
-import React, {Component} from 'react';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Heading from "./components/Heading";
 import Loginpage from "./components/login/Loginpage";
 import Mainpage from "./components/main/Mainpage";
 
-class App extends Component {
-  componentDidMount() {
-    this.props.store.subscribe(() => {
-      this.setState({reduxState: this.props.store.getState()});
-    })
-  }
+const App = () => {
+  const token = useSelector((state) => state.token);
+  const dispatch = useDispatch()
 
-  render() {
-    return (<div  className="firstPage" style={{
-      backgroundImage: "url(images/wallpaper3.jpg)",
-      backgroundSize: "45%",
-      backgroundRepeat: "repeat"
-    }}><Heading/><br/>
+  console.log(token);
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      dispatch({ type: "dame", value: localStorage.getItem("token") });
+    }
+  }, []);
+  // componentDidMount() {
+  //   if(localStorage.getItem('token')){
+  //     store.dispatch({type: "dame", value: localStorage.getItem('token')})
+  //   }
+  //   this.props.store.subscribe(() => {
+  //     this.setState({reduxState: this.props.store.getState()});
+  //   })
+  //   console.log()
+  // }
 
-      {this.props.store.getState().login.login !== null ? <Mainpage/> :<Loginpage/>}
-      
-    </div>)
-  }
-}
+  return (
+    <div
+      className="firstPage"
+      style={{
+        backgroundImage: "url(images/wallpaper3.jpg)",
+        backgroundSize: "45%",
+        backgroundRepeat: "repeat",
+      }}
+    >
+      <Heading />
+      <br />
+
+      {token !== null ? <Mainpage /> : <Loginpage />}
+    </div>
+  );
+};
 
 export default App;
