@@ -7,7 +7,7 @@ import "./main.css";
 import store from "../../app/store";
 
 
-const url = "http://localhost:6061/api";
+const url = "http://localhost:8081/api";
 function Mainpage() {
     const [x_form, setX] = useState('0');
     const [y_form, setY] = useState('0');

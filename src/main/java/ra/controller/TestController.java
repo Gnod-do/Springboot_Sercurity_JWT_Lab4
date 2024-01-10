@@ -21,6 +21,7 @@ public class TestController {
         return "This is user content";
     }
 
+
     @GetMapping("/mod")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public String moderatorAccess(){
@@ -38,6 +39,9 @@ public class TestController {
 //        StringBuilder stringBuilder = new StringBuilder(token + point);
 //        return stringBuilder.toString();
 //    }
+
+
+
 
 
 }

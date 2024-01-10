@@ -1,6 +1,6 @@
 import store from "../../../app/store";
 
-const url = "http://localhost:6061/api";
+const url = "http://localhost:8081/api";
 
 function clicked(e, r, setChecks, checks) {
     let r_val = parseFloat(r)

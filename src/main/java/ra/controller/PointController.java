@@ -23,7 +23,7 @@ import java.util.StringJoiner;
 
 @Slf4j
 @Controller
-@CrossOrigin(origins = "*")
+    @CrossOrigin(origins = "*")
 @RequestMapping(path = "${apiPrefix}/auth")
 public class PointController {
 
